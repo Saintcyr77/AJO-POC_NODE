@@ -1,4 +1,3 @@
-// public/app.js - the BROWSER half of the hybrid POC
 //
 // What this does, in order:
 //   1. Sets up Web SDK ("alloy")
@@ -7,10 +6,7 @@
 //   4. Tells Adobe "displayed", "clicked", and sends the one real page view
 //   5. Fills the status readouts and the event log so you can follow along
 
-// ---------------------------------------------------------------------------
-// 1. Web SDK base code (Adobe's standard snippet).
-//    Creates a placeholder alloy() so we can queue commands before the library finishes loading.
-// ---------------------------------------------------------------------------
+
 !function(n,o){o.forEach(function(o){n[o]||((n.__alloyNS=n.__alloyNS||
 []).push(o),n[o]=function(){var u=arguments;return new Promise(
 function(i,l){n.setTimeout(function(){n[o].q.push([i,l,u])})})},n[o].q=[])})}
