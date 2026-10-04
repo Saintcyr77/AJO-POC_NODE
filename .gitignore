@@ -1,0 +1,9 @@
+# Dependencies (re-created by npm install)
+node_modules/
+
+# Your real settings - never commit
+.env
+
+# Logs / OS clutter
+npm-debug.log*
+.DS_Store

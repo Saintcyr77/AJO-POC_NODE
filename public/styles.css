@@ -1,0 +1,159 @@
+/* styles.css - "starship console" look for the AJO hybrid POC
+   Colours: amber = actions + AJO content, cyan = identity + data readouts */
+
+:root {
+  --void: #060914;            /* deep space background */
+  --panel: rgba(14, 22, 42, 0.62);
+  --line: rgba(111, 211, 255, 0.22);
+  --cyan: #6fd3ff;
+  --amber: #ff9b3d;
+  --amber-hi: #ffb468;
+  --steel: #8f9bb3;           /* secondary text */
+  --text: #e6edf7;
+  --ok: #7ee2a8;
+  --alert: #ff6b6b;
+  --display: "Rajdhani", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --cut: 36px;                /* size of the angled panel corners */
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+
+body {
+  min-height: 100vh;
+  color: var(--text);
+  font: 500 17px/1.55 var(--display);
+  background:
+    radial-gradient(ellipse at 85% -10%, rgba(255, 155, 61, 0.13), transparent 55%),
+    radial-gradient(ellipse at 5% 110%, rgba(111, 211, 255, 0.10), transparent 50%),
+    var(--void);
+}
+
+/* Starfield canvas sits behind everything */
+#starfield { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+
+.shell { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 28px 24px 72px; }
+
+/* ---------- Top bar ---------- */
+.bar {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  justify-content: space-between; align-items: center;
+  padding-bottom: 18px; margin-bottom: 44px;
+  border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 14px; font-size: 21px; font-weight: 700; letter-spacing: 0.05em; }
+.brand-mark { width: 18px; height: 18px; border: 2px solid var(--amber); transform: rotate(45deg); position: relative; }
+.brand-mark::after { content: ""; position: absolute; inset: 3px; background: var(--amber); }
+
+.signin { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.signin label, .signin .who { color: var(--steel); font-size: 16px; }
+.signin b { color: var(--cyan); font-weight: 600; }
+.signin input {
+  width: 150px; padding: 8px 10px;
+  font: 500 14px var(--mono); color: var(--text);
+  background: rgba(6, 9, 20, 0.75); border: 1px solid var(--line);
+}
+.signin input:focus { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+/* ---------- Buttons: angled corners ---------- */
+button {
+  cursor: pointer; border: 0;
+  padding: 9px 18px;
+  font: 700 16px var(--display); letter-spacing: 0.04em;
+  color: #241000; background: var(--amber);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  transition: background 0.15s;
+}
+button:hover { background: var(--amber-hi); }
+button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+button.ghost { background: transparent; color: var(--amber); border: 1px solid var(--amber); }
+button.ghost:hover { background: rgba(255, 155, 61, 0.12); }
+
+/* ---------- The personalized panel ("transmission") ---------- */
+.transmission {
+  position: relative; overflow: hidden;
+  padding: 52px 52px 48px;
+  background: var(--panel);
+  border-left: 3px solid var(--amber);
+  backdrop-filter: blur(6px);
+  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
+}
+/* faint scanlines */
+.transmission::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(111, 211, 255, 0.045) 0 1px, transparent 1px 4px);
+}
+/* one-time sweep when AJO content arrives (app.js adds .arrived) */
+.transmission::after {
+  content: ""; position: absolute; left: 0; right: 0; top: -45%; height: 45%;
+  pointer-events: none; opacity: 0;
+  background: linear-gradient(180deg, transparent, rgba(255, 155, 61, 0.22), transparent);
+}
+.transmission.arrived::after { animation: sweep 1.2s ease-out 1; }
+@keyframes sweep {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(330%); }
+}
+
+.source {
+  display: inline-flex; align-items: center; gap: 9px;
+  margin-bottom: 26px; padding: 4px 12px;
+  font: 500 13px var(--mono); color: var(--steel);
+  border: 1px solid var(--line);
+}
+.source::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--steel); }
+.transmission[data-source="ajo"] .source { color: var(--amber); border-color: rgba(255, 155, 61, 0.5); }
+.transmission[data-source="ajo"] .source::before { background: var(--amber); animation: pulse 1.8s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.25; } }
+
+.title {
+  margin: 0 0 18px; max-width: 14ch;
+  font-size: clamp(42px, 7.2vw, 80px); line-height: 0.95; font-weight: 700; letter-spacing: -0.01em;
+}
+.sub { margin: 0 0 32px; max-width: 52ch; font-size: 19px; color: var(--steel); }
+.cta { padding: 14px 28px; font-size: 18px; }
+
+/* ---------- Status readouts ---------- */
+.readouts dl {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; margin: 28px 0 0;
+  background: var(--line); border: 1px solid var(--line);   /* 1px gaps become the divider lines */
+}
+.readouts dl > div { padding: 16px 20px; background: rgba(8, 13, 27, 0.88); }
+.readouts .wide { grid-column: 1 / -1; }
+.readouts dt { margin-bottom: 4px; font-size: 15px; color: var(--steel); }
+.readouts dd { margin: 0; font-size: 21px; font-weight: 600; }
+.readouts dd.mono { font: 500 15px var(--mono); color: var(--cyan); word-break: break-all; }
+.readouts dd[data-state="ok"] { color: var(--ok); }
+.readouts dd[data-state="alert"] { color: var(--alert); }
+
+/* ---------- Event log ---------- */
+.log { margin-top: 28px; }
+.log h2 { margin: 0 0 10px; font-size: 18px; font-weight: 600; color: var(--steel); }
+#debug {
+  list-style: none; margin: 0; padding: 14px 18px;
+  max-height: 440px; overflow: auto;
+  font: 400 13px/1.6 var(--mono);
+  background: rgba(3, 5, 12, 0.85); border: 1px solid var(--line);
+}
+#debug li { display: grid; grid-template-columns: auto 1fr; gap: 14px; padding: 3px 0; }
+#debug time { color: #50607d; }
+#debug .lbl { color: var(--cyan); }
+#debug .val { color: var(--text); }
+#debug li[data-kind="ajo"] .lbl { color: var(--amber); }
+#debug li[data-kind="alert"] .lbl { color: var(--alert); }
+#debug pre { margin: 4px 0 0; white-space: pre-wrap; color: var(--steel); font: inherit; }
+
+/* ---------- Small screens ---------- */
+@media (max-width: 640px) {
+  :root { --cut: 22px; }
+  .transmission { padding: 34px 24px 32px; }
+  .readouts dl { grid-template-columns: 1fr; }
+  .bar { margin-bottom: 28px; }
+}
+
+/* ---------- Respect "reduce motion" settings ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

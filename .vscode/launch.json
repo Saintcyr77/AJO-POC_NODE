@@ -1,0 +1,33 @@
+{
+ 
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // Debug server.js - breakpoints in server.js will pause here
+      "name": "Server (server.js)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/server.js",
+      "cwd": "${workspaceFolder}",
+      "skipFiles": ["<node_internals>/**", "${workspaceFolder}/node_modules/**"],
+      "console": "integratedTerminal"
+    },
+    {
+      // Opens Chrome on the POC page - breakpoints in public/app.js will pause here
+      "name": "Browser (public/app.js)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/public",
+      "skipFiles": ["**/alloy.min.js"]
+    }
+  ],
+  "compounds": [
+    {
+      // Starts BOTH at once: the server, then Chrome. Use this one most of the time.
+      "name": "Server + Browser",
+      "configurations": ["Server (server.js)", "Browser (public/app.js)"],
+      "stopAll": true
+    }
+  ]
+}
